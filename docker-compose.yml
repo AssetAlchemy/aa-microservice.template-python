@@ -1,0 +1,39 @@
+version: '3'
+
+services:
+    mongo:
+        image: mongo
+        env_file:
+            - .env
+        ports:
+            - "${MONGO_PORT}:${MONGO_PORT}"
+        volumes:
+            - ./db/data:/var/lib/mysql:rw
+            - ./db/storage.sql:/docker-entrypoint-initdb.d/schema.sql:ro
+    mongo-express:
+        image: mongo-express
+        environment:
+            - ME_CONFIG_MONGODB_SERVER=mongo
+            - ME_CONFIG_MONGODB_PORT=${MONGO_PORT}
+            - ME_CONFIG_MONGODB_ENABLE_ADMIN=true
+            - ME_CONFIG_MONGODB_AUTH_DATABASE=admin
+            - ME_CONFIG_BASICAUTH_USERNAME=dev
+            - ME_CONFIG_BASICAUTH_PASSWORD=dev
+        depends_on:
+            - mongo
+        ports:
+          - "8888:8081"
+    aa-microservice-img-template-python:
+        container_name: aa-microservice-img-template-python
+        env_file:
+            - .env
+        build:
+            context: .
+            target: dev
+            dockerfile: Dockerfile
+        ports:
+            - "${PORT}:8000"
+        depends_on:
+            - mongo
+        volumes:
+            - .:/app
