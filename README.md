@@ -12,9 +12,9 @@ pip install -r requirements-dev.txt  # if it is necessary
 fastapi run app/main.py
 ```
 ### Notes:
-* The message of `Serving at: http://0.0.0.0:8000` & `API docs: http://0.0.0.0:8000/docs` are not true if you want to see the app from outside the docker container. To see thoose endpoints from your host device you will need to replace the `http://0.0.0.0:8000` for `http://localhost:${PORT from .env}`
+* The message of `Serving at: http://0.0.0.0:8000` & `API docs: http://0.0.0.0:8000/docs` at the console are not true if you want to see the app from outside the docker container. To see thoose endpoints from your host device you will need to replace the `http://0.0.0.0:8000` for `http://localhost:${PORT from .env}`
 
-In conclusion, if you want to see the app go to: `localhost:${PORT}`
+In conclusion, if you want to see the app go to: `http://localhost:${PORT}`
 
 ### Example:
 
