@@ -29,8 +29,8 @@ As we have a PORT setted on 4000 we can enter on the next URLs
 
 
 
-## Update dependencies
+## Update dependencies in requeriments.txt
 ```bash
-pip install -r requirements.txt
-pip install -r requirements-dev.txt  # if it is necessary
+pip freeze > requirements.txt
+pip freeze > requirements-dev.txt  # if it is necessary
 ```
