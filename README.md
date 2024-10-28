@@ -1,4 +1,4 @@
-# AssetAlchemy - Microservice img python template
+# AssetAlchemy - Microservice img template for python
 This is a template repo for all img microservices based on python that will use the app "AssetAlchemy"
 
 ## Install dependencies
