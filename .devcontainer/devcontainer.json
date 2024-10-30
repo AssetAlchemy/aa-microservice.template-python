@@ -39,7 +39,7 @@
 	// Uncomment the next line to run commands after the container is created.
 	"postCreateCommand": "apk add git openssh && [ -f /root/.ssh/id_rsa ] && chmod 600 /root/.ssh/id_rsa && chmod 700 /root/.ssh",
 	// apk add git openssh: Install git & openssh into the devcontainer
-	// [ -f /root/.ssh/id_rsa ] && chmod 600 /root/.ssh/id_rsa && chmod 700 /root/.ssh || echo 'WARNING: No SSH key found.': Check if exists ssh creadentials and assign them its chmod.
+	// [ -f /root/.ssh/id_rsa ] && chmod 600 /root/.ssh/id_rsa && chmod 700 /root/.ssh: Check if exists ssh creadentials and assign them its chmod.
 
 	// Configure tool-specific properties.
 	"customizations": {
