@@ -23,6 +23,15 @@ services:
             - mongo
         ports:
           - "8888:8081"
+    rabbitmq:
+        image: rabbitmq:3-management
+        ports:
+            - "5672:5672"  # Comunication port
+            - "15672:15672" # Web interface port
+        environment:
+            RABBITMQ_DEFAULT_USER: guest
+            RABBITMQ_DEFAULT_PASS: guest
+    
     aa-microservice-img-template-python:
         container_name: aa-microservice-img-template-python
         env_file:

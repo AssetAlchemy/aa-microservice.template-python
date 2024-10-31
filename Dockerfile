@@ -10,14 +10,13 @@ FROM base as dev
 ENV PYTHON_ENV=development
 
 RUN apk update && apk upgrade
-COPY requirements.txt .
 COPY requirements-dev.txt .
 
-RUN pip install -r requirements-dev.txt && pip install -r requirements.txt
+RUN pip install -r requirements-dev.txt
 COPY . .
 
 EXPOSE $PORT
-CMD ["fastapi", "run", "app/main.py"]
+CMD ["python", "./app/main.py"]
 
 
 # PRODUCTION
@@ -32,4 +31,4 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY . .
 
 EXPOSE $PORT
-CMD ["fastapi", "run", "app/main.py"]
+CMD ["python ", "./app/main.py"]

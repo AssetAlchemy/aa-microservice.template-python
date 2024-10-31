@@ -2,16 +2,11 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "Python: FastAPI (Uvicorn)",
-      "type": "python",
+      "name": "Python",
+      "type": "debugpy",
       "request": "launch",
-      "module": "uvicorn",
-      "args": [
-          "src.main:application",
-          "--reload"
-      ],
-      "jinja": true,
+      "module": "app.main",
       "console": "integratedTerminal"
     }
-]
+  ]
 }
