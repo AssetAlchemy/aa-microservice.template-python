@@ -10,7 +10,7 @@ rabbitmq_host = os.getenv(key="RABBITMQ_HOST", default="rabbitmq")
 rabbitmq_port = os.getenv(key="RABBITMQ_PORT", default="5672")
 rabbitmq_user = os.getenv(key="RABBITMQ_USER", default="guest")
 rabbitmq_password = os.getenv(key="RABBITMQ_PASSWORD", default="guest")
-queue_name = os.getenv("RABBITMQ_QUEUE", "test_queue")
+queue_name = os.getenv(key="RABBITMQ_QUEUE", default="test_queue")
 
 # Connect to RabbitMQ
 credentials = pika.PlainCredentials(rabbitmq_user, rabbitmq_password)
