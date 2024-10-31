@@ -10,7 +10,9 @@ rabbitmq_host = os.getenv(key="RABBITMQ_HOST", default="rabbitmq")
 rabbitmq_port = os.getenv(key="RABBITMQ_PORT", default="5672")
 rabbitmq_user = os.getenv(key="RABBITMQ_USER", default="guest")
 rabbitmq_password = os.getenv(key="RABBITMQ_PASSWORD", default="guest")
-queue_name = os.getenv(key="RABBITMQ_QUEUE", default="test_queue")
+exchange = os.getenv(key="RABBITMQ_EXCHANGE", default="assets")
+queue_name = os.getenv(key="RABBITMQ_QUEUE", default="assets_template")
+binding_key = os.getenv(key="RABBITMQ_BINDING_KEY", default="asset.img.template")
 
 # Connect to RabbitMQ
 credentials = pika.PlainCredentials(rabbitmq_user, rabbitmq_password)
@@ -21,8 +23,10 @@ connection = pika.BlockingConnection(
 )
 channel = connection.channel()
 
-# Declare a queue (ensures it exists)
-channel.queue_declare(queue=queue_name)
+# Config chanel
+channel.exchange_declare(exchange=exchange, durable=True)
+channel.queue_declare(queue=queue_name, durable=True)
+channel.queue_bind(queue=queue_name, exchange=exchange, routing_key=binding_key)
 
 
 # The callback function that is called when a new message arrives

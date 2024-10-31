@@ -42,7 +42,7 @@
 				"ms-python.python@2024.16.1",
 				"ms-python.pylint@2024.0.0",
 				"ms-python.black-formatter@2024.4.0",
-				"editorconfig.editorconfig@0.16.6",
+				"asyncapi.asyncapi-preview@0.6.3",
 				"tal7aouy.icons@1.0.0",
 				"github.github-vscode-theme@6.3.5"
 			],
