@@ -1,0 +1,98 @@
+asyncapi: 3.0.0
+defaultContentType: application/json
+
+info:
+  title: Microservice template for Python
+  version: 1.0.0
+  description: >
+    This microservice obtains the identifier of an asset that is in a storage, with this ID the microservice is in charge of retrieving the asset to make its processes and if it is necessary to upload a new asset with a new ID to be able to emit an event that there has been an update in the asset.
+  contact:
+    name: Support
+    url: https://nahuetomas.vercel.app
+    email: nahuetomas@outlook.com
+servers:
+  development:
+    host: localhost:5672
+    description: RabbitMQ broker for the development environment.
+    protocol: amqp
+    protocolVersion: 0-9-1
+  staging:
+    host: "{Staging RabbitMQ URL}:5672"
+    description: RabbitMQ broker for the staging environment.
+    protocol: amqp
+    protocolVersion: 0-9-1
+  production:
+    host: "{Production RabbitMQ URL}:5672"
+    description: RabbitMQ broker for the production environment.
+    protocol: amqp
+    protocolVersion: 0-9-1
+channels: 
+  assets_template:
+    address: assets_template
+    summary: >-
+      Template queue to recieve assets as microservice.
+    messages:
+      recieve_asset:
+        $ref: '#/components/messages/template_message'
+    bindings:
+      amqp:
+        queue:
+          vhost: assets_template
+        is: queue
+  assets_processed:
+    address: assets_processed
+    summary: >-
+      Queue to send assets already proccessed by this microservice.
+    messages:
+      send_asset:
+        $ref: '#/components/messages/template_message'
+    bindings:
+      amqp:
+        queue:
+          vhost: assets_processed
+        is: queue
+operations:
+  recieve_asset:
+    action: receive
+    channel:
+      $ref: '#/channels/assets_template'
+    messages:
+      - $ref: '#/channels/assets_template/messages/recieve_asset'
+  send_asset:
+    action: send
+    channel:
+      $ref: '#/channels/assets_processed'
+components:
+  messages:
+    template_message:
+      payload:
+        $ref: '#/components/schemas/template_payload'
+  schemas:
+    template_payload:
+      type: object
+      properties:
+        message_id:
+          type: string
+          examples:
+            - 11111a79-e599-444d-a6ce-51ff593f8317
+          description: Message ID
+        message_version:
+          type: number
+          description: Message version.
+          examples:
+            - 1.0
+        trace_id:
+          type: string
+          description: ID to make trace of messages.
+          examples:
+            - 22222a79-e599-444d-a6ce-51ff593f8317
+        asset_id:
+          type: string
+          description: Asset id from storage.
+          examples:
+            - 609d0993906429612483cfb1
+        options:
+          type: object
+          description: Optional options to apply transformations depending of microservice.
+          examples:
+            - { "width": 1000, "height": 1000, "fit": "cover"  }
