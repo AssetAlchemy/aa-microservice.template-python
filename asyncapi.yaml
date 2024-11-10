@@ -27,8 +27,8 @@ servers:
     protocol: amqp
     protocolVersion: 0-9-1
 channels: 
-  assets_template:
-    address: assets_template
+  assets.img.template:
+    address: assets.img.template
     summary: >-
       Template queue to recieve assets as microservice.
     messages:
@@ -37,10 +37,10 @@ channels:
     bindings:
       amqp:
         queue:
-          vhost: assets_template
+          vhost: assets.img.template
         is: queue
-  assets_processed:
-    address: assets_processed
+  assets.processed:
+    address: assets.processed
     summary: >-
       Queue to send assets already proccessed by this microservice.
     messages:
@@ -49,19 +49,19 @@ channels:
     bindings:
       amqp:
         queue:
-          vhost: assets_processed
+          vhost: assets.processed
         is: queue
 operations:
   recieve_asset:
     action: receive
     channel:
-      $ref: '#/channels/assets_template'
+      $ref: '#/channels/assets.img.template'
     messages:
-      - $ref: '#/channels/assets_template/messages/recieve_asset'
+      - $ref: '#/channels/assets.img.template/messages/recieve_asset'
   send_asset:
     action: send
     channel:
-      $ref: '#/channels/assets_processed'
+      $ref: '#/channels/assets.processed'
 components:
   messages:
     template_message:
