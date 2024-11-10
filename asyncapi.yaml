@@ -34,6 +34,8 @@ channels:
     messages:
       recieve_asset:
         $ref: '#/components/messages/template_message'
+      recieve_error:
+        $ref: '#/components/messages/error_template_message'
     bindings:
       amqp:
         queue:
@@ -46,6 +48,8 @@ channels:
     messages:
       send_asset:
         $ref: '#/components/messages/template_message'
+      send_error:
+        $ref: '#/components/messages/error_template_message'
     bindings:
       amqp:
         queue:
@@ -58,15 +62,32 @@ operations:
       $ref: '#/channels/assets.img.template'
     messages:
       - $ref: '#/channels/assets.img.template/messages/recieve_asset'
+  recieve_error:
+    action: receive
+    channel:
+      $ref: '#/channels/assets.img.template'
+    messages:
+      - $ref: '#/channels/assets.img.template/messages/recieve_error'
   send_asset:
     action: send
     channel:
       $ref: '#/channels/assets.processed'
+    messages:
+      - $ref: '#/channels/assets.processed/messages/send_asset'
+  send_error:
+    action: send
+    channel:
+      $ref: '#/channels/assets.processed'
+    messages:
+      - $ref: '#/channels/assets.processed/messages/send_error'
 components:
   messages:
     template_message:
       payload:
         $ref: '#/components/schemas/template_payload'
+    error_template_message:
+      payload:
+        $ref: '#/components/schemas/error_template_payload'
   schemas:
     template_payload:
       type: object
@@ -91,6 +112,55 @@ components:
           description: Asset id from storage.
           examples:
             - 609d0993906429612483cfb1
+        status:
+          type: string
+          enum:
+            - normal
+            - error
+          description: Message status.
+          examples:
+            - normal
+        options:
+          type: object
+          description: Optional options to apply transformations depending of microservice.
+          examples:
+            - { "width": 1000, "height": 1000, "fit": "cover"  }
+    error_template_payload:
+      type: object
+      properties:
+        message_id:
+          type: string
+          examples:
+            - 11111a79-e599-444d-a6ce-51ff593f8317
+          description: Message ID
+        message_version:
+          type: number
+          description: Message version.
+          examples:
+            - 1.0
+        trace_id:
+          type: string
+          description: ID to make trace of messages.
+          examples:
+            - 22222a79-e599-444d-a6ce-51ff593f8317
+        asset_id:
+          type: string
+          description: Asset id from storage.
+          examples:
+            - 609d0993906429612483cfb1
+        status:
+          type: string
+          enum:
+            - normal
+            - error
+          description: Message status.
+          examples:
+            - error
+        error:
+          type: string
+          description: Error message description.
+          examples:
+            - "Message type not found"
         options:
           type: object
           description: Optional options to apply transformations depending of microservice.
