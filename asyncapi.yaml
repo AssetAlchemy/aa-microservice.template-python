@@ -120,6 +120,13 @@ components:
           description: Message status.
           examples:
             - normal
+        source:
+          type: string
+          enum:
+            - aa-microservice.img.template-python
+          description: Source service.
+          examples:
+            - aa-microservice.img.template-python
         options:
           type: object
           description: Optional options to apply transformations depending of microservice.
@@ -156,6 +163,13 @@ components:
           description: Message status.
           examples:
             - error
+        source:
+          type: string
+          enum:
+            - aa-microservice.img.template-python
+          description: Source service.
+          examples:
+            - aa-microservice.img.template-python
         error:
           type: string
           description: Error message description.
