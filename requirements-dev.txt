@@ -19,3 +19,5 @@ click==8.1.7
 mypy-extensions==1.0.0
 packaging==24.1
 pathspec==0.12.1
+dnspython==2.7.0
+pymongo==4.10.1
