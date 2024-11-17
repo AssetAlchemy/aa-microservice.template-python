@@ -9,6 +9,7 @@ reports=no
 [MESSAGES CONTROL]
 # Enables all messages except those related to docstrings
 disable=missing-module-docstring, missing-class-docstring, missing-function-docstring
+disable=broad-except
 
 [FORMAT]
 # Maximum line length
