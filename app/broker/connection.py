@@ -1,6 +1,9 @@
 import json
+import uuid
+import datetime
 
 import pika
+import pika.spec
 
 from config.envs import (
     rabbitmq_user,
@@ -10,14 +13,9 @@ from config.envs import (
     exchange,
     queue_name,
     queue_name_send,
+    source,
 )
-from entities.message import (
-    MessageRecieved,
-    MessageToSend,
-    MessageErrorToSend,
-    MissingFieldError,
-)
-from database import get_file, upload_file, FileNotFound
+from database import get_file, upload_file, GetFileError, UploadFileError, FileNotFound
 
 
 # Connect to RabbitMQ
@@ -30,18 +28,12 @@ def init_broker():
     )
     channel = connection.channel()
 
-    # Config chanel
-    channel.exchange_declare(exchange=exchange, durable=True)
-    channel.queue_declare(queue=queue_name, durable=True)
-    channel.queue_bind(queue=queue_name, exchange=exchange)
-
     # Set up consumption of messages from the queue
-    channel.basic_consume(queue=queue_name, on_message_callback=callback, auto_ack=True)
-
+    channel.basic_consume(queue=queue_name, on_message_callback=callback)
     channel.start_consuming()
 
 
-def send_message(message_body):
+def send_message(message_body, correlation_id):
     """Send a message to the 'queue_name_send' queue"""
     credentials = pika.PlainCredentials(rabbitmq_user, rabbitmq_password)
     connection = pika.BlockingConnection(
@@ -52,74 +44,58 @@ def send_message(message_body):
     channel = connection.channel()
 
     # Declare the exchange and queue (same as in init_broker)
-    channel.exchange_declare(exchange=exchange, durable=True)
-    channel.queue_declare(queue=queue_name_send, durable=True)
     channel.queue_bind(
         queue=queue_name_send, exchange=exchange, routing_key=queue_name_send
     )
 
-    # Send the message
     channel.basic_publish(
         exchange=exchange,
         routing_key=queue_name_send,
-        body=str(message_body),
+        body=json.dumps(message_body),
         properties=pika.BasicProperties(
-            delivery_mode=2,  # Make the message persistent
+            delivery_mode=pika.spec.PERSISTENT_DELIVERY_MODE,
+            app_id=source,
+            content_type="application/json",
+            message_id=str(uuid.uuid4()),
+            timestamp=int(datetime.datetime.now().timestamp()),
+            correlation_id=correlation_id,
         ),
     )
-
-    # Close the connection
     connection.close()
 
 
 # The callback function that is called when a new message arrives
-def callback(ch, method, properties, body):
+def callback(channel, method, properties, body):
     try:
-        print(f"New message: ch: {ch}")
-        print(f"New message: method: {method}")
-        print(f"New message: properties: {properties}")
-        print(f"New message: body: {body.decode()}")
+        message = json.loads(body.decode("utf-8"))
 
-        message = MessageRecieved(message_dict=json.loads(body.decode("utf-8")))
-        file = get_file(message.asset_id)
-        # HERE YOU CAN MAKE YOUR OWN TRANSFORMATION
-        new_file_id = upload_file(file)
-        send_message(
-            MessageToSend(
-                message_dict={
-                    "message_version": getattr(message, "message_version", None),
-                    "trace_id": getattr(message, "trace_id", None),
+        try:
+            file = get_file(message.get("asset_id", None))
+            # HERE YOU CAN MAKE YOUR TRANSFORMATION
+            new_file_id = upload_file(file)
+            send_message(
+                message_body={
                     "asset_id": new_file_id,
-                }
-            ).to_dict()
-        )
+                    "options": getattr(message, "options", {}),
+                    "status": "normal",
+                },
+                correlation_id=properties.correlation_id,
+            )
+            channel.basic_ack(delivery_tag=method.delivery_tag)
+
+        except (GetFileError, UploadFileError, FileNotFound, Exception) as e:
+            print(e)
+            send_message(
+                message_body={
+                    "asset_id": str(getattr(e, "file_id", 0)),
+                    "options": getattr(message, "options", {}),
+                    "status": "error",
+                    "error": str(e),
+                },
+                correlation_id=properties.correlation_id,
+            )
+            channel.basic_nack(delivery_tag=method.delivery_tag, requeue=False)
 
     except json.JSONDecodeError:
-        send_message(
-            MessageErrorToSend(
-                message_dict={
-                    "message_version": 1.0,
-                    "trace_id": 0,
-                    "asset_id": 0,
-                    "error": "Error to parse message",
-                    "options": {},
-                }
-            ).to_dict()
-        )
-
-    except (MissingFieldError, FileNotFound) as e:
-        message = MessageRecieved(
-            message_dict=json.loads(body.decode("utf-8"))
-        ).to_dict()
-
-        send_message(
-            MessageErrorToSend(
-                message_dict={
-                    "message_version": getattr(message, "message_version", None),
-                    "trace_id": getattr(message, "trace_id", None),
-                    "asset_id": getattr(message, "asset_id", None),
-                    "error": str(e),
-                    "options": getattr(message, "options", {}),
-                }
-            ).to_dict()
-        )
+        print("Error to parse message")
+        channel.basic_nack(delivery_tag=method.delivery_tag, requeue=False)
