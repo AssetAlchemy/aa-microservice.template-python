@@ -28,7 +28,7 @@ servers:
     protocolVersion: 0-9-1
 channels: 
   assets.img.template:
-    address: assets.img.template
+    address: assets.img.template.1
     summary: >-
       Template queue to recieve assets as microservice.
     messages:
@@ -39,10 +39,10 @@ channels:
     bindings:
       amqp:
         queue:
-          vhost: assets.img.template
+          vhost: assets.img.template.1
         is: queue
   assets.processed:
-    address: assets.processed
+    address: assets.processed.1
     summary: >-
       Queue to send assets already proccessed by this microservice.
     messages:
@@ -53,7 +53,7 @@ channels:
     bindings:
       amqp:
         queue:
-          vhost: assets.processed
+          vhost: assets.processed.1
         is: queue
 operations:
   recieve_asset:
@@ -83,30 +83,63 @@ operations:
 components:
   messages:
     template_message:
+      contentType: application/json
+      headers:
+        type: object
+        properties:
+          message_id:
+            type: string
+            description: Message unique ID.
+            examples:
+              - 22222a79-e599-444d-a6ce-51ff593f8317
+          correlation_id:
+            type: string
+            description: ID to trace events.
+            examples:
+              - 11111a79-e599-444d-a6ce-51ff593f8317
+          app_id:
+            type: string
+            description: Application source.
+            enum:
+              - aa-microservice.img.template-python
+            examples:
+              - aa-microservice.img.template-python
+          content_type:
+            type: string
+            description: Content type, in this case is always `application/json`.
       payload:
         $ref: '#/components/schemas/template_payload'
     error_template_message:
+      contentType: application/json
+      headers:
+        type: object
+        properties:
+          message_id:
+            type: string
+            description: Message unique ID.
+            examples:
+              - 22222a79-e599-444d-a6ce-51ff593f8317
+          correlation_id:
+            type: string
+            description: ID to trace events.
+            examples:
+              - 11111a79-e599-444d-a6ce-51ff593f8317
+          app_id:
+            type: string
+            description: Application source.
+            enum:
+              - aa-microservice.img.template-python
+            examples:
+              - aa-microservice.img.template-python
+          content_type:
+            type: string
+            description: Content type, in this case is always `application/json`.
       payload:
         $ref: '#/components/schemas/error_template_payload'
   schemas:
     template_payload:
       type: object
       properties:
-        message_id:
-          type: string
-          examples:
-            - 11111a79-e599-444d-a6ce-51ff593f8317
-          description: Message ID
-        message_version:
-          type: number
-          description: Message version.
-          examples:
-            - 1.0
-        trace_id:
-          type: string
-          description: ID to make trace of messages.
-          examples:
-            - 22222a79-e599-444d-a6ce-51ff593f8317
         asset_id:
           type: string
           description: Asset id from storage.
@@ -135,21 +168,6 @@ components:
     error_template_payload:
       type: object
       properties:
-        message_id:
-          type: string
-          examples:
-            - 11111a79-e599-444d-a6ce-51ff593f8317
-          description: Message ID
-        message_version:
-          type: number
-          description: Message version.
-          examples:
-            - 1.0
-        trace_id:
-          type: string
-          description: ID to make trace of messages.
-          examples:
-            - 22222a79-e599-444d-a6ce-51ff593f8317
         asset_id:
           type: string
           description: Asset id from storage.
@@ -163,13 +181,6 @@ components:
           description: Message status.
           examples:
             - error
-        source:
-          type: string
-          enum:
-            - aa-microservice.img.template-python
-          description: Source service.
-          examples:
-            - aa-microservice.img.template-python
         error:
           type: string
           description: Error message description.
