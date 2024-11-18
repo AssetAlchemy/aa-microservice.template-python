@@ -7,8 +7,8 @@ from .connection import fs, db
 def get_file(file_id):
     try:
         file = fs.get(ObjectId(file_id))
-        filemetada = db.uploads.files.find_one({"_id": file_id})
-        return {"filedata": file, "filemetada": filemetada}
+        filemetadata = db.uploads.files.find_one({"_id": ObjectId(file_id)})
+        return {"filedata": file, "filemetadata": filemetadata}
     except NoFile as e:
         print(e)
         raise FileNotFound(file_id) from e
@@ -17,10 +17,18 @@ def get_file(file_id):
         raise GetFileError(file_id) from e
 
 
-def upload_file(file_data, filename):
+def upload_file(file):
     try:
-        return fs.put(file_data.read(), filename=filename)
+        metadata = {
+            "filename": file["filemetadata"]["filename"],
+            "chunkSize": file["filemetadata"]["chunkSize"],
+            "length": file["filemetadata"]["length"],
+            "contentType": file["filemetadata"]["contentType"],
+        }
+        filedata = file["filedata"]
+        return fs.put(filedata.read(), **metadata)
     except Exception as e:
+        print(e)
         raise UploadFileError() from e
 
 
