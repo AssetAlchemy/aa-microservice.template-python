@@ -9,4 +9,4 @@ client = MongoClient(db_uri)
 db = client[db_name]
 
 # Creating gridFS object
-fs = gridfs.GridFS(db)
+fs = gridfs.GridFS(db, "uploads")

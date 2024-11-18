@@ -27,6 +27,7 @@ def init_broker():
         )
     )
     channel = connection.channel()
+    channel.queue_declare(queue=queue_name, durable=True)
 
     # Set up consumption of messages from the queue
     channel.basic_consume(queue=queue_name, on_message_callback=callback)
@@ -42,6 +43,8 @@ def send_message(message_body, correlation_id):
         )
     )
     channel = connection.channel()
+    channel.queue_declare(queue=queue_name_send, durable=True)
+    channel.exchange_declare(exchange=exchange, durable=True)
 
     # Declare the exchange and queue (same as in init_broker)
     channel.queue_bind(
@@ -73,9 +76,10 @@ def callback(channel, method, properties, body):
             file = get_file(message.get("asset_id", None))
             # HERE YOU CAN MAKE YOUR TRANSFORMATION
             new_file_id = upload_file(file)
+            print("Asset uploaded!", new_file_id)
             send_message(
                 message_body={
-                    "asset_id": new_file_id,
+                    "asset_id": str(new_file_id),
                     "options": getattr(message, "options", {}),
                     "status": "normal",
                 },
