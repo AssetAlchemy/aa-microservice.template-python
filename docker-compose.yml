@@ -22,16 +22,26 @@ services:
         depends_on:
             - mongo
         ports:
-          - "8888:8081"
+            - "8888:8081"
+    crud-mongo-gridfs:
+        image: ntrodriguez/crud-mongo-gridfs:2.0
+        container_name: crud-mongo-gridfs
+        ports:
+            - "5000:3000"
+        environment:
+            - MONGO_URI=mongodb://mongo:${MONGO_PORT}/${MONGO_DB_NAME}
+            - PORT=3000
+        depends_on:
+            - mongo
     rabbitmq:
         image: rabbitmq:3-management
         ports:
-            - "5672:5672"  # Comunication port
+            - "5672:5672" # Comunication port
             - "15672:15672" # Web interface port
         environment:
             RABBITMQ_DEFAULT_USER: guest
             RABBITMQ_DEFAULT_PASS: guest
-    
+
     aa-microservice-img-template-python:
         container_name: aa-microservice-img-template-python
         env_file:
