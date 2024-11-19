@@ -62,6 +62,32 @@ pip freeze > requirements-dev.txt
 
 Note: It is the developer's responsibility to keep the `requeriments.txt' file as clean as possible, excluding dev dependencies to avoid them being installed in the production container. Every MB counts in production, it's better to have it well optimised.
 
+# Development usage:
+In our `docker-compose.yml` we will find some services that will help us with development:
+- aa-microservice-img-template-python: This is our microservice where we will write the code. 
+- mongo: The database where the files will be stored.
+- mongo-express: Database administration panel. Works on http://localhost:8888 (default user & passord is `dev`).
+- crud-mongo-gridfs: Database CRUD for files. Working on http://localhost:5000/
+- rabbitmq: Comes with two applications. The first is the message broker and the second is the rabbitMQ admin panel on http://localhost:15672/.
+
+![Devcontainer services](devcontainer.png)
+
+## How do I receive messages in the microservice?
+By default, the microservice listens for messages on the `assets.img.template.1` queue. If we want to test it we can send a message through the rabbitmq admin panel, for this we should go to http://localhost:15672/#/queues/%2F/assets.img.template.1 (if you are using a different queue please change the last part of the link) and go to the "Publish message" section, here you can publish any message you want.
+
+In the project repo there is an `asyncapi.yaml` file which explains which format messages should follow. In the devcontainer there is an extension to have a nice preview of `asyncapi` files (asyncapi.asyncapi-preview).
+
+See https://www.asyncapi.com/en for more details.
+
+The microservice require an `asset_id` which should be sent in the body of the message.
+
+## Where do I get the `asset_id` if there is no file uploaded?
+Now you have everything working and if you have checked the `asyncapi.yaml` you have seen that an `asset_id` is required to apply processes to an asset, but at the moment we have no assets uploaded to our storage database.
+
+So, how can I upload a test file to pass its `asset_id` in a message to start processing the file?
+
+Wow! that was a very specific and big question, fortunately it has a short answer. we can upload a file via the `crud-mongo-gridfs` running on http://localhost:50000/ to start the process.
+
 # Aditional information:
 
 ## Posible fails:
