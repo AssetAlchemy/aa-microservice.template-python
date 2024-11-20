@@ -25,7 +25,6 @@ services:
             - "8888:8081"
     crud-mongo-gridfs:
         image: ntrodriguez/crud-mongo-gridfs:2.0
-        container_name: crud-mongo-gridfs
         ports:
             - "5000:3000"
         environment:
