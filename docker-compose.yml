@@ -49,7 +49,5 @@ services:
             context: .
             target: dev
             dockerfile: Dockerfile
-        ports:
-            - "${PORT}:8000"
         depends_on:
             - mongo

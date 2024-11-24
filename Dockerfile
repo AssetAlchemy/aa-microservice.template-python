@@ -15,7 +15,6 @@ COPY requirements-dev.txt .
 RUN pip install -r requirements-dev.txt
 COPY . .
 
-EXPOSE $PORT
 CMD ["python", "./app/main.py"]
 
 
@@ -30,5 +29,4 @@ COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 COPY . .
 
-EXPOSE $PORT
 CMD ["python ", "./app/main.py"]
