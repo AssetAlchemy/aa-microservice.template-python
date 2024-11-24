@@ -5,7 +5,7 @@
       "name": "Python",
       "type": "debugpy",
       "request": "launch",
-      "module": "app.main",
+      "program": "${workspaceFolder}/app/main.py",
       "console": "integratedTerminal"
     }
   ]
