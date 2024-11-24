@@ -27,8 +27,8 @@ servers:
     protocol: amqp
     protocolVersion: 0-9-1
 channels: 
-  assets.img.template:
-    address: assets.img.template.1
+  assets.template:
+    address: assets.template.1
     summary: >-
       Template queue to recieve assets as microservice.
     messages:
@@ -39,7 +39,7 @@ channels:
     bindings:
       amqp:
         queue:
-          vhost: assets.img.template.1
+          vhost: assets.template.1
         is: queue
   assets.processed:
     address: assets.processed.1
@@ -59,15 +59,15 @@ operations:
   recieve_asset:
     action: receive
     channel:
-      $ref: '#/channels/assets.img.template'
+      $ref: '#/channels/assets.template'
     messages:
-      - $ref: '#/channels/assets.img.template/messages/recieve_asset'
+      - $ref: '#/channels/assets.template/messages/recieve_asset'
   recieve_error:
     action: receive
     channel:
-      $ref: '#/channels/assets.img.template'
+      $ref: '#/channels/assets.template'
     messages:
-      - $ref: '#/channels/assets.img.template/messages/recieve_error'
+      - $ref: '#/channels/assets.template/messages/recieve_error'
   send_asset:
     action: send
     channel:
@@ -101,9 +101,9 @@ components:
             type: string
             description: Application source.
             enum:
-              - aa-microservice.img.template-python
+              - aa-microservice.template-python
             examples:
-              - aa-microservice.img.template-python
+              - aa-microservice.template-python
           content_type:
             type: string
             description: Content type, in this case is always `application/json`.
@@ -128,9 +128,9 @@ components:
             type: string
             description: Application source.
             enum:
-              - aa-microservice.img.template-python
+              - aa-microservice.template-python
             examples:
-              - aa-microservice.img.template-python
+              - aa-microservice.template-python
           content_type:
             type: string
             description: Content type, in this case is always `application/json`.
@@ -156,10 +156,10 @@ components:
         source:
           type: string
           enum:
-            - aa-microservice.img.template-python
+            - aa-microservice.template-python
           description: Source service.
           examples:
-            - aa-microservice.img.template-python
+            - aa-microservice.template-python
         options:
           type: object
           description: Optional options to apply transformations depending of microservice.
