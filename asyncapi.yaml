@@ -30,11 +30,11 @@ channels:
   assets.template:
     address: assets.template.1
     summary: >-
-      Template queue to recieve assets as microservice.
+      Template queue to receive assets as microservice.
     messages:
-      recieve_asset:
+      receive_asset:
         $ref: '#/components/messages/template_message'
-      recieve_error:
+      receive_error:
         $ref: '#/components/messages/error_template_message'
     bindings:
       amqp:
@@ -56,18 +56,18 @@ channels:
           vhost: assets.processed.1
         is: queue
 operations:
-  recieve_asset:
+  receive_asset:
     action: receive
     channel:
       $ref: '#/channels/assets.template'
     messages:
-      - $ref: '#/channels/assets.template/messages/recieve_asset'
-  recieve_error:
+      - $ref: '#/channels/assets.template/messages/receive_asset'
+  receive_error:
     action: receive
     channel:
       $ref: '#/channels/assets.template'
     messages:
-      - $ref: '#/channels/assets.template/messages/recieve_error'
+      - $ref: '#/channels/assets.template/messages/receive_error'
   send_asset:
     action: send
     channel:
