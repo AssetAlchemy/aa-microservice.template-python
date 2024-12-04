@@ -27,7 +27,7 @@ servers:
     protocol: amqp
     protocolVersion: 0-9-1
 channels: 
-  assets.template:
+  assets.template.1:
     address: assets.template.1
     summary: >-
       Template queue to receive assets as microservice.
@@ -41,7 +41,7 @@ channels:
         queue:
           vhost: assets.template.1
         is: queue
-  assets.processed:
+  assets.processed.1:
     address: assets.processed.1
     summary: >-
       Queue to send assets already proccessed by this microservice.
@@ -59,27 +59,27 @@ operations:
   receive_asset:
     action: receive
     channel:
-      $ref: '#/channels/assets.template'
+      $ref: '#/channels/assets.template.1'
     messages:
-      - $ref: '#/channels/assets.template/messages/receive_asset'
+      - $ref: '#/channels/assets.template.1/messages/receive_asset'
   receive_error:
     action: receive
     channel:
-      $ref: '#/channels/assets.template'
+      $ref: '#/channels/assets.template.1'
     messages:
-      - $ref: '#/channels/assets.template/messages/receive_error'
+      - $ref: '#/channels/assets.template.1/messages/receive_error'
   send_asset:
     action: send
     channel:
-      $ref: '#/channels/assets.processed'
+      $ref: '#/channels/assets.processed.1'
     messages:
-      - $ref: '#/channels/assets.processed/messages/send_asset'
+      - $ref: '#/channels/assets.processed.1/messages/send_asset'
   send_error:
     action: send
     channel:
-      $ref: '#/channels/assets.processed'
+      $ref: '#/channels/assets.processed.1'
     messages:
-      - $ref: '#/channels/assets.processed/messages/send_error'
+      - $ref: '#/channels/assets.processed.1/messages/send_error'
 components:
   messages:
     template_message:
