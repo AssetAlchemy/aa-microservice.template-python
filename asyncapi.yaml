@@ -153,13 +153,6 @@ components:
           description: Message status.
           examples:
             - normal
-        source:
-          type: string
-          enum:
-            - aa-microservice.template-python
-          description: Source service.
-          examples:
-            - aa-microservice.template-python
         options:
           type: object
           description: Optional options to apply transformations depending of microservice.
